@@ -1,0 +1,55 @@
+version: '3.8'
+services:
+  nginx:
+    build:
+      context: docker/backend/development
+      dockerfile: nginx.docker
+    volumes:
+      - ./src/:/app
+    depends_on:
+      - php-fpm
+    ports:
+      - "80:80"
+      - "8080:8080"
+
+  php-fpm:
+    build:
+      context: docker/backend/development
+      dockerfile: php-fpm.docker
+    expose:
+      - 9003
+    environment:
+      PHP_IDE_CONFIG: serverName=Docker
+    volumes:
+      - ./src/:/app
+    depends_on:
+      - database
+
+  database:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_USER: symfony
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: symfony_docker
+      MYSQL_PASSWORD: symfony
+    ports:
+      - '4306:3306'
+    volumes:
+      - mysql-dbb-data/:/var/lib/mysql
+
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+
+  mailer:
+    image: mailhog/mailhog
+    ports:
+      - "8025:8025"
+
+volumes:
+  composer:
+  mysql-dbb-data:
