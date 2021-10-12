@@ -28,6 +28,6 @@ class MessageHandleService
             'text'    => $text,
             'parse_mode' => 'Markdown'
         ]);
- 
+
     }
 }
