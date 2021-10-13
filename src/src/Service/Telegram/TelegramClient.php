@@ -12,7 +12,6 @@ class TelegramClient
         if($_ENV['APP_ENV'] == 'true') {
             return (new Telegram($bot_api_key, $bot_username))->useGetUpdatesWithoutDatabase();
         } else {
-            print_r('13');
             $telegram = new Telegram($bot_api_key, $bot_username);
             return $telegram->useGetUpdatesWithoutDatabase();
         }

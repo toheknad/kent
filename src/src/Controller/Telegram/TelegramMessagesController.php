@@ -25,11 +25,6 @@ class TelegramMessagesController
             $this->messageHandleService->start($message);
         }
 
-        return new JsonResponse(
-            [
-                'token' => 'test'
-            ],
-            201
-        );
+        return new JsonResponse(['result' => 'ok!'], 201);
     }
 }
