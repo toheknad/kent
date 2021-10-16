@@ -2,18 +2,20 @@
 
 namespace App\Service\Telegram;
 
+use App\Service\Telegram\Strategy\CommandHandler;
+use App\Service\Telegram\Strategy\TextHandler;
 use Longman\TelegramBot\Request;
 
 class MessageHandleService
 {
-    private \CommandHandler $commandHandler;
-    private \TextHandler $textHandler;
+    private CommandHandler $commandHandler;
+    private TextHandler $textHandler;
 
     /**
-     * @param \CommandHandler $commandHandler
-     * @param \TextHandler $textHandler
+     * @param CommandHandler $commandHandler
+     * @param TextHandler $textHandler
      */
-    public function __construct(\CommandHandler $commandHandler, \TextHandler $textHandler)
+    public function __construct(CommandHandler $commandHandler, TextHandler $textHandler)
     {
         $this->commandHandler = $commandHandler;
         $this->textHandler = $textHandler;

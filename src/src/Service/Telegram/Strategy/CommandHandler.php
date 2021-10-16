@@ -1,4 +1,5 @@
 <?php
+namespace App\Service\Telegram\Strategy;
 
 use Longman\TelegramBot\Request;
 

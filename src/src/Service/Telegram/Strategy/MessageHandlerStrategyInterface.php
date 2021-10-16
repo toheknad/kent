@@ -1,4 +1,5 @@
 <?php
+namespace App\Service\Telegram\Strategy;
 
 interface MessageHandlerStrategyInterface
 {
