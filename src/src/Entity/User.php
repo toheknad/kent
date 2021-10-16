@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @ORM\HasLifecycleCallbacks
  */
 class User
 {
@@ -36,7 +37,7 @@ class User
     /**
      * @ORM\Column(type="datetime", nullable = true)
      */
-    private ?DateTime $updateAt;
+    private ?DateTime $updatedAt;
 
 
 
@@ -44,12 +45,31 @@ class User
     {
         $this->chatId = $chatId;
         $this->stage = 0;
-        $this->createdAt = new DateTime();
 
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * Gets triggered only on insert
+
+     * @ORM\PrePersist
+     */
+    public function onPrePersist()
+    {
+        $this->createdAt = new \DateTime("now");
+    }
+
+    /**
+     * Gets triggered every time on update
+
+     * @ORM\PreUpdate
+     */
+    public function onPreUpdate()
+    {
+        $this->updatedAt = new \DateTime("now");
     }
 }

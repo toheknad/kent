@@ -26,6 +26,6 @@ class TelegramMessagesController
             $this->messageHandleService->start($message);
         }
 
-        return $this->json(['username' => 'jane.doe']);
+        return new JsonResponse(['success'], 200);
     }
 }
