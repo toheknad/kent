@@ -2,9 +2,11 @@
 
 namespace App\Service\Telegram;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\Telegram\Strategy\CommandHandler;
 use App\Service\Telegram\Strategy\TextHandler;
+use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Request;
 
 class MessageHandleService
@@ -12,16 +14,18 @@ class MessageHandleService
     private CommandHandler $commandHandler;
     private TextHandler $textHandler;
     private UserRepository $userRepository;
+    private EntityManagerInterface $entityManager;
 
     /**
      * @param CommandHandler $commandHandler
      * @param TextHandler $textHandler
      */
-    public function __construct(CommandHandler $commandHandler, TextHandler $textHandler, UserRepository $userRepository)
+    public function __construct(EntityManagerInterface $entityManager, CommandHandler $commandHandler, TextHandler $textHandler, UserRepository $userRepository)
     {
         $this->commandHandler = $commandHandler;
         $this->textHandler = $textHandler;
         $this->userRepository = $userRepository;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -51,6 +55,11 @@ class MessageHandleService
 
     private function identificationUser(array $message)
     {
-//        $this->userRepository->findBy(['chatId' => $message[]])
+        $telegramUserId = $message['message']['from']['id'];
+        if (!$this->userRepository->findBy(['chatId' => $telegramUserId])) {
+            $user = new User($telegramUserId);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+        }
     }
 }

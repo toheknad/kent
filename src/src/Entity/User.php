@@ -25,9 +25,14 @@ class User
     private int $chatId;
 
     /**
+     * @ORM\Column(type="string", nullable = true)
+     */
+    private ?string $stageName = null;
+
+    /**
      * @ORM\Column(type="integer")
      */
-    private int $stage;
+    private int $stageId;
 
     /**
      * @ORM\Column(type="datetime")
@@ -44,7 +49,7 @@ class User
     public function __construct(int $chatId)
     {
         $this->chatId = $chatId;
-        $this->stage = 0;
+        $this->stageId = 0;
 
     }
 
@@ -71,5 +76,11 @@ class User
     public function onPreUpdate()
     {
         $this->updatedAt = new \DateTime("now");
+    }
+
+    public function setStage(string $name, int $id)
+    {
+        $this->stageName = $name;
+        $this->stageId = $id;
     }
 }
