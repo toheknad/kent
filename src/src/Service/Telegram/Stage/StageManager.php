@@ -22,14 +22,14 @@ class StageManager
     /**
      * @throws \Exception
      */
-    public function handle(User $user, string $message)
+    public function handle(User $user, array $message)
     {
         $currentUserStage = $this->hasUserStage($user);
         $currentUserStep = $user->getStep();
+        $nextStep = $currentUserStep + 1;
+        $handlerName = $this->defineHandler($currentUserStage, $nextStep);
 
-        $handlerName = $this->defineHandler($currentUserStage, $currentUserStep);
-
-        (new $handlerName($this->userRepository, $this->entityManager))->handle($user);
+        (new $handlerName($this->userRepository, $this->entityManager))->handle($user, $message, $nextStep);
     }
 
     /**
@@ -49,9 +49,8 @@ class StageManager
      * @return mixed
      * @throws \Exception
      */
-    private function defineHandler($currentUserStage, $currentUserStep): mixed
+    private function defineHandler($currentUserStage, $nextStep): mixed
     {
-        $nextStep = $currentUserStep + 1;
         if (!isset($this->config::CONFIG[$currentUserStage])) {
             throw new \Exception("The stage doesn't exist!");
         }
@@ -59,6 +58,7 @@ class StageManager
         if (!isset($this->config::CONFIG[$currentUserStage][$nextStep])) {
             throw new \Exception("The stage's step doesn't exist!");
         }
+
         return $this->config::CONFIG[$currentUserStage][$nextStep]['class'];
     }
 }

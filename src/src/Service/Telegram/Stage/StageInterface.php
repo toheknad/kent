@@ -6,5 +6,5 @@ use App\Entity\User;
 
 interface StageInterface
 {
-    public function handle(User $user);
+    public function handle(User $user, array $message, int $nextStep);
 }
