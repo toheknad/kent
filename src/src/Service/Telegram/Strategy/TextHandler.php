@@ -22,6 +22,6 @@ class TextHandler implements MessageHandlerStrategyInterface
     public function process(array $message)
     {
         $user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])[0];
-        $this->stageManager->handle($user);
+        $this->stageManager->handle($user, $message);
     }
 }

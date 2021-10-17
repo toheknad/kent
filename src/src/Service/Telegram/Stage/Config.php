@@ -1,6 +1,8 @@
 <?php
 namespace App\Service\Telegram\Stage;
 
+use App\Service\Telegram\Stage\Registration\FirstLastNameStage;
+
 class Config
 {
     public const REGISTRATION_STAGE = 'registration';
@@ -12,8 +14,8 @@ class Config
                 'class' => null,
             ],
             '1' => [
-                'info' => 'user wrote first and last name',
-                'class'
+                'info'  => 'user wrote first and last name',
+                'class' => FirstLastNameStage::class
             ]
         ]
     ];
