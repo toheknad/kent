@@ -3,6 +3,7 @@
 namespace App\Service\Telegram\Stage;
 
 use App\Entity\User;
+use App\Repository\UserFilterRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -11,12 +12,14 @@ class StageManager
     private Config $config;
     private UserRepository $userRepository;
     private EntityManagerInterface $entityManager;
+    private UserFilterRepository $userFilterRepository;
 
-    public function __construct(Config $config, UserRepository $userRepository, EntityManagerInterface $entityManager)
+    public function __construct(Config $config, UserRepository $userRepository, UserFilterRepository $userFilterRepository, EntityManagerInterface $entityManager)
     {
         $this->config = $config;
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
+        $this->userFilterRepository = $userFilterRepository;
     }
 
     /**
@@ -29,7 +32,14 @@ class StageManager
         $nextStep = $currentUserStep + 1;
         $handlerName = $this->defineHandler($currentUserStage, $nextStep);
 
-        (new $handlerName($this->userRepository, $this->entityManager))->handle($user, $message, $nextStep);
+        switch ($currentUserStage){
+            case Config::REGISTRATION_STAGE:
+                (new $handlerName($this->userRepository, $this->entityManager))->handle($user, $message, $nextStep);
+                break;
+            case Config::FILTER_STAGE:
+                (new $handlerName($this->userRepository, $this->userFilterRepository, $this->entityManager))->handle($user, $message, $nextStep);
+                break;
+        }
     }
 
     /**

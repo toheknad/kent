@@ -3,6 +3,7 @@ namespace App\Service\Telegram\Strategy;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\Telegram\Keyboard\Keyboard;
 use App\Service\Telegram\Stage\Config;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Request;
@@ -37,6 +38,12 @@ class CommandHandler implements MessageHandlerStrategyInterface
                 'text'    => $text,
                 'parse_mode' => 'Markdown'
             ]);
+
+//            Request::sendMessage([
+//                'chat_id' => $chatId,
+//                'text'    => "323",
+//                'reply_markup' =>  Keyboard::getKeyboard(),
+//            ]);
 
             /** @var User $user */
             $user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])[0];

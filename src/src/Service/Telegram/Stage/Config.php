@@ -9,6 +9,7 @@ use App\Service\Telegram\Stage\Registration\GenderStage;
 class Config
 {
     public const REGISTRATION_STAGE = 'registration';
+    public const FILTER_STAGE = 'filter';
 
     public const CONFIG = [
         self::REGISTRATION_STAGE => [
@@ -32,6 +33,26 @@ class Config
                 'info'  => 'user wrote gender',
                 'class' => GenderStage::class
             ]
+        ],
+        self::FILTER_STAGE => [
+            '0' => [
+                'info'  => 'user completed auth',
+                'class' => null,
+            ],
+            '1' => [
+                'info'  => 'user wrote gender for filter ',
+                'class' => \App\Service\Telegram\Stage\Filter\GenderStage::class
+            ],
+            '2' => [
+                'info'  => 'user wrote age for filter',
+                'class' => \App\Service\Telegram\Stage\Filter\AgeStage::class
+            ],
         ]
+    ];
+
+    public const MENU = [
+        "🔒 Мой профиль" => true,
+        "📓 Поиск" => true,
+        "👁 Взаимные матчи" => true
     ];
 }

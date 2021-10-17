@@ -74,6 +74,10 @@ class User
      */
     private ?DateTime $updatedAt;
 
+    /**
+     * @ORM\OneToOne(targetEntity="UserFilter", inversedBy="user", cascade={"persist"})
+     */
+    private $userFilter;
 
 
     public function __construct(int $chatId)
@@ -186,6 +190,18 @@ class User
     public function getIsAuth(): ?bool
     {
         return $this->isAuth;
+    }
+
+    public function setUserFilter(UserFilter $userFilter): self
+    {
+        $this->userFilter = $userFilter;
+
+        return $this;
+    }
+
+    public function getUserFilter(): UserFilter
+    {
+        return $this->userFilter;
     }
 
     public function resetStage()

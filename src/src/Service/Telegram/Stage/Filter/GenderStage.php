@@ -1,10 +1,11 @@
 <?php
-namespace App\Service\Telegram\Stage\Registration;
+namespace App\Service\Telegram\Stage\Filter;
 
 use App\Entity\User;
+use App\Entity\UserFilter;
+use App\Repository\UserFilterRepository;
 use App\Repository\UserRepository;
 use App\Service\Telegram\Keyboard\Keyboard;
-use App\Service\Telegram\Stage\Config;
 use App\Service\Telegram\Stage\StageInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Request;
@@ -13,11 +14,13 @@ class GenderStage implements StageInterface
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
+    private UserFilterRepository $userFilterRepository;
 
-    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager)
+    public function __construct(UserRepository $userRepository, UserFilterRepository $userFilterRepository, EntityManagerInterface $entityManager)
     {
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
+        $this->userFilterRepository = $userFilterRepository;
     }
 
     /**
@@ -36,8 +39,7 @@ class GenderStage implements StageInterface
      */
     private function checkGender(string $gender, int $chatId): string
     {
-        $gender = mb_strtolower($gender);
-        if (!in_array($gender, ['мужской', 'женский'])) {
+        if (!in_array(mb_strtolower($gender), ['мужской', 'женский', 'неважно'])) {
             $this->sendGenderError($chatId);
         }
         $this->sendSuccess($gender, $chatId);
@@ -66,11 +68,9 @@ class GenderStage implements StageInterface
     private function sendSuccess(string $gender, int $chatId)
     {
         $text = [];
-        $text[] = "Отлично, вы прошли базовую авторизацию";
-        $text[] = 'Теперь давайте быстро настроим ваш фильтр поиска';
-        $text[] = 'Чтобы я знал, кто вам нужен';
-        $text[] = 'Для начала введите пол людей, которые должны вам попадаться';
-        $text[] = 'Если вам все равно, то просто напишете "неважно"';
+        $text[] = "Хорошо, вы будете видеть людей только с полом: {$gender}";
+        $text[] = 'И последнее, введите возрастной диапозон для фильтра';
+        $text[] = 'Например, 17-25';
         $text = implode(PHP_EOL, $text);
 
         Request::sendMessage([
@@ -84,10 +84,10 @@ class GenderStage implements StageInterface
     private function saveUserData(string $gender, int $chatId, int $nextStep)
     {
         $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
-        $user->setStage(Config::FILTER_STAGE);
-        $user->setStep(0);
-        $user->setIsAuth(true);
-        $user->setGender($gender);
+        $userFilter = new UserFilter();
+        $userFilter->setGender($gender);
+        $user->setUserFilter($userFilter);
+        $user->setStep($nextStep);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }

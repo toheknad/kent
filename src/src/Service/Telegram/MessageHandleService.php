@@ -4,6 +4,7 @@ namespace App\Service\Telegram;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\Telegram\Stage\Config;
 use App\Service\Telegram\Strategy\CommandHandler;
 use App\Service\Telegram\Strategy\TextHandler;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,6 +49,9 @@ class MessageHandleService
     {
         if ($message['message']['text'][0] === '/') {
             $this->commandHandler->process($message);
+        } elseif (in_array($message['message']['text'],Config::MENU)) {
+            print_r('Зашли в меню');
+            die();
         } else {
             $this->textHandler->process($message);
         }
