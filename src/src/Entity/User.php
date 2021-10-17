@@ -27,12 +27,12 @@ class User
     /**
      * @ORM\Column(type="string", nullable = true)
      */
-    private ?string $stageName = null;
+    private ?string $stage = null;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private int $stageId;
+    private int $step;
 
     /**
      * @ORM\Column(type="datetime")
@@ -49,7 +49,7 @@ class User
     public function __construct(int $chatId)
     {
         $this->chatId = $chatId;
-        $this->stageId = 0;
+        $this->step = 0;
 
     }
 
@@ -78,9 +78,23 @@ class User
         $this->updatedAt = new \DateTime("now");
     }
 
-    public function setStage(string $name, int $id)
+    public function setStage(string $name)
     {
-        $this->stageName = $name;
-        $this->stageId = $id;
+        $this->stage = $name;
+    }
+
+    public function setStep(int $id)
+    {
+        $this->step = $id;
+    }
+
+    public function getStage()
+    {
+        return $this->stage;
+    }
+
+    public function getStep()
+    {
+        return $this->step;
     }
 }

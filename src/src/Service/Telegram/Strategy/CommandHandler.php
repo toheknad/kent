@@ -39,12 +39,11 @@ class CommandHandler implements MessageHandlerStrategyInterface
             ]);
 
             /** @var User $user */
-            if ($user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])) {
-                $user = $user[0];
-                $user->setStage(Config::REGISTRATION_STAGE, 0);
-                $this->entityManager->persist($user);
-                $this->entityManager->flush();
-            }
+            $user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])[0];
+            $user->setStage(Config::REGISTRATION_STAGE);
+            $user->setStep(0);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
         }
     }
 }
