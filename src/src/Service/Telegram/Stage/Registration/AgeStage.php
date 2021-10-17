@@ -7,7 +7,7 @@ use App\Service\Telegram\Stage\StageInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Request;
 
-class CityStage implements StageInterface
+class AgeStage implements StageInterface
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;

@@ -25,11 +25,8 @@ class FirstLastNameStage implements StageInterface
     {
         $name = $message['message']['text'];
         $chatId = $message['message']['chat']['id'];
-        $this->checkFirstAndLastName($name, $chatId);
-        $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
-        $user->setStep($nextStep);
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
+        $userData = $this->checkFirstAndLastName($name, $chatId);
+        $this->saveUserData($userData, $chatId, $nextStep);
     }
 
     /**
@@ -43,6 +40,7 @@ class FirstLastNameStage implements StageInterface
             $this->sendCountError($chatId);
         }
         $this->sendSuccess($name, $chatId);
+        return $name;
     }
 
     /**
@@ -79,6 +77,16 @@ class FirstLastNameStage implements StageInterface
             'text'    => $text,
             'parse_mode' => 'Markdown'
         ]);
+    }
+
+    private function saveUserData(array $userData, int $chatId, int $nextStep)
+    {
+        $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
+        $user->setStep($nextStep);
+        $user->setName($userData[0]);
+        $user->setSurname($userData[1]);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
     }
 
 

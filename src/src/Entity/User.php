@@ -35,6 +35,21 @@ class User
     private int $step;
 
     /**
+     * @ORM\Column(type="string", nullable = true)
+     */
+    private ?string $name = null;
+
+    /**
+     * @ORM\Column(type="string", nullable = true)
+     */
+    private ?string $surname = null;
+
+    /**
+     * @ORM\Column(type="string", nullable = true)
+     */
+    private ?string $city = null;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private DateTime $createdAt;
@@ -96,5 +111,35 @@ class User
     public function getStep()
     {
         return $this->step;
+    }
+
+    public function setName(string $name)
+    {
+        $this->name = $name;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setCity(string $city)
+    {
+        $this->city = $city;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setSurname(string $surname)
+    {
+        $this->surname = $surname;
+    }
+
+    public function getSurname(): ?string
+    {
+        return $this->surname;
     }
 }
