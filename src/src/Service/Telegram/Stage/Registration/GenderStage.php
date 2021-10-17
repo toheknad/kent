@@ -7,7 +7,7 @@ use App\Service\Telegram\Stage\StageInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Request;
 
-class AgeStage implements StageInterface
+class GenderStage implements StageInterface
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
@@ -23,54 +23,32 @@ class AgeStage implements StageInterface
      */
     public function handle(User $user, array $message, int $nextStep)
     {
-        $age = $message['message']['text'];
+        $gender = $message['message']['text'];
         $chatId = $message['message']['chat']['id'];
-        $age = $this->checkAge($age, $chatId);
-        $this->saveUserData($age, $chatId, $nextStep);
+        $gender = $this->checkGender($gender, $chatId);
+        $this->saveUserData($gender, $chatId, $nextStep);
     }
 
     /**
      * @throws \Exception
      */
-    private function checkAge(string $age, int $chatId): string
+    private function checkGender(string $gender, int $chatId): string
     {
-        if ($age < 15 ) {
-            $this->sendAgeSmallError($chatId);
+        if (!in_array(mb_strtolower($gender), ['мужской', 'женский'])) {
+            $this->sendGenderError($chatId);
         }
-        if ($age > 100 ) {
-            $this->sendAgeGreatError($chatId);
-        }
-
-        $this->sendSuccess($age, $chatId);
-        return $age;
+        $this->sendSuccess($gender, $chatId);
+        return $gender;
     }
 
     /**
      * @param int $chatId
      * @throws \Longman\TelegramBot\Exception\TelegramException
      */
-    private function sendAgeSmallError(int $chatId)
+    private function sendGenderError(int $chatId)
     {
         $text = [];
-        $text[] = 'К сожалению, вам должно быть больше 16 лет';
-        $text = implode(PHP_EOL, $text);
-
-        Request::sendMessage([
-            'chat_id' => $chatId,
-            'text'    => $text,
-            'parse_mode' => 'Markdown'
-        ]);
-        throw new \Exception("User send small age");
-    }
-
-    /**
-     * @param int $chatId
-     * @throws \Longman\TelegramBot\Exception\TelegramException
-     */
-    private function sendAgeGreatError(int $chatId)
-    {
-        $text = [];
-        $text[] = 'Вы точно ввели ваш настоящий возраст?';
+        $text[] = 'Вы точно ввели правильный пол?';
         $text[] = 'Попробуйте еще раз';
         $text = implode(PHP_EOL, $text);
 
@@ -79,16 +57,18 @@ class AgeStage implements StageInterface
             'text'    => $text,
             'parse_mode' => 'Markdown'
         ]);
-        throw new \Exception("User send great age");
+        throw new \Exception("User send wrong gender");
     }
 
-    private function sendSuccess(string $age, int $chatId)
+    private function sendSuccess(string $gender, int $chatId)
     {
         $text = [];
-        $text[] = "Отлично, вам {$age}!";
-        $text[] = 'Теперь последний вопрос';
-        $text[] = 'Ваш пол?';
-        $text[] = 'Например, женский';
+        $text[] = "Отлично, вы прошли базовую авторизацию";
+        $text[] = 'Вы уже можете перейти к поиску';
+        $text[] = 'Но если выхотите уточнить информацию о себе';
+        $text[] = 'Например: наличие домашних животных, вредные привычки и тд';
+        $text[] = 'То перейдите в "Расширенные настройки" в меню';
+        $text[] = 'Удачного поиска!';
         $text = implode(PHP_EOL, $text);
 
         Request::sendMessage([
@@ -98,11 +78,11 @@ class AgeStage implements StageInterface
         ]);
     }
 
-    private function saveUserData(string $age, int $chatId, int $nextStep)
+    private function saveUserData(string $gender, int $chatId, int $nextStep)
     {
         $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
-        $user->setStep($nextStep);
-        $user->setAge($age);
+        $user->resetStage($nextStep);
+        $user->setGender($gender);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
     }

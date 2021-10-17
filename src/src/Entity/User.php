@@ -52,7 +52,17 @@ class User
     /**
      * @ORM\Column(type="integer", nullable = true)
      */
-    private ?string $age = null;
+    private ?int $age = null;
+
+    /**
+     * @ORM\Column(type="string", nullable = true)
+     */
+    private ?string $gender = null;
+
+    /**
+     * @ORM\Column(type="boolean", nullable = true)
+     */
+    private ?bool $isAuth = null;
 
     /**
      * @ORM\Column(type="datetime")
@@ -113,17 +123,17 @@ class User
         $this->age = $age;
     }
 
-    public function getAge()
+    public function getAge(): ?int
     {
         return $this->age;
     }
 
-    public function getStage()
+    public function getStage(): ?string
     {
         return $this->stage;
     }
 
-    public function getStep()
+    public function getStep(): int
     {
         return $this->step;
     }
@@ -136,6 +146,16 @@ class User
     public function getName(): ?string
     {
         return $this->name;
+    }
+
+    public function setGender(string $gender)
+    {
+        $this->gender = $gender;
+    }
+
+    public function getGender(): ?string
+    {
+        return $this->gender;
     }
 
     public function setCity(string $city)
@@ -156,5 +176,21 @@ class User
     public function getSurname(): ?string
     {
         return $this->surname;
+    }
+
+    public function setIsAuth(bool $isAuth)
+    {
+        $this->isAuth = $isAuth;
+    }
+
+    public function getIsAuth(): ?bool
+    {
+        return $this->isAuth;
+    }
+
+    public function resetStage()
+    {
+        $this->stage = null;
+        $this->step = 0;
     }
 }
