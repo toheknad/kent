@@ -50,6 +50,11 @@ class User
     private ?string $city = null;
 
     /**
+     * @ORM\Column(type="integer", nullable = true)
+     */
+    private ?string $age = null;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private DateTime $createdAt;
@@ -101,6 +106,16 @@ class User
     public function setStep(int $id)
     {
         $this->step = $id;
+    }
+
+    public function setAge(int $age)
+    {
+        $this->age = $age;
+    }
+
+    public function getAge()
+    {
+        return $this->age;
     }
 
     public function getStage()
