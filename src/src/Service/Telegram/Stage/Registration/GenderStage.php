@@ -65,12 +65,17 @@ class GenderStage implements StageInterface
 
     private function sendSuccess(string $gender, int $chatId)
     {
+//        $text = [];
+//        $text[] = "Отлично, вы прошли базовую авторизацию";
+//        $text[] = 'Теперь давайте быстро настроим ваш фильтр поиска';
+//        $text[] = 'Чтобы я знал, кто вам нужен';
+//        $text[] = 'Для начала введите пол людей, которые должны вам попадаться';
+//        $text[] = 'Если вам все равно, то просто напишете "неважно"';
+//        $text = implode(PHP_EOL, $text);
+
         $text = [];
-        $text[] = "Отлично, вы прошли базовую авторизацию";
-        $text[] = 'Теперь давайте быстро настроим ваш фильтр поиска';
-        $text[] = 'Чтобы я знал, кто вам нужен';
-        $text[] = 'Для начала введите пол людей, которые должны вам попадаться';
-        $text[] = 'Если вам все равно, то просто напишете "неважно"';
+        $text[] = "Отлично, теперь пришлите мне фото, которое люди будут видеть";
+        $text[] = "при показе вашей анкеты";
         $text = implode(PHP_EOL, $text);
 
         Request::sendMessage([
@@ -84,9 +89,7 @@ class GenderStage implements StageInterface
     private function saveUserData(string $gender, int $chatId, int $nextStep)
     {
         $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
-        $user->setStage(Config::FILTER_STAGE);
-        $user->setStep(0);
-        $user->setIsAuth(true);
+        $user->setStep($nextStep);
         $user->setGender($gender);
         $this->entityManager->persist($user);
         $this->entityManager->flush();

@@ -47,5 +47,33 @@ class UserRepository extends ServiceEntityRepository
         ;
     }
     */
+    /**
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
+     */
+    public function getUserByFilter(User $user)
+    {
+        $userFilter = $user->getUserFilter();
+
+        $query = $this->createQueryBuilder('u')
+            ->andWhere('u.age > :ageFrom')
+            ->andWhere('u.age < :ageTo')
+            ->andWhere('u.city = :city')
+            ->andWhere('u.id != :currentUserId')
+            ->setParameter('ageFrom', $userFilter->getAgeFrom())
+            ->setParameter('ageTo', $userFilter->getAgeTo())
+            ->setParameter('city', $user->getCity())
+            ->setParameter('currentUserId', $user->getId());
+
+        if ($userFilter->getGender() !== 'неважно') {
+            $query->andWhere('u.gender = :gender')
+                ->setParameter('city', $userFilter->getGender());
+        }
+
+
+
+        return $query->getQuery()
+            ->getSingleResult();
+    }
 
 }

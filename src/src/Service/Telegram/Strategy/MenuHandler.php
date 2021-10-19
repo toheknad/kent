@@ -20,9 +20,10 @@ class MenuHandler implements MessageHandlerStrategyInterface
         $this->stageManager = $stageManager;
     }
 
-    public function process(array $messa1ge)
+    public function process(array $message)
     {
+        $user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])[0];
         $handlerName = Config::MENU[$message['message']['text']];
-        (new $handlerName($this->userRepository, $this->entityManager))->handle();
+        (new $handlerName($this->userRepository, $this->entityManager))->handle($user, $message);
     }
 }

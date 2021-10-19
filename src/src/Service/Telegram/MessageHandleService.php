@@ -55,9 +55,9 @@ class MessageHandleService
      */
     private function handleMessageByType(array $message)
     {
-        if ($message['message']['text'][0] === '/') {
+        if (isset($message['message']['text']) && $message['message']['text'][0] === '/') {
             $this->commandHandler->process($message);
-        } elseif (isset(Config::MENU[$message['message']['text']])) {
+        } elseif (isset($message['message']['text']) && isset(Config::MENU[$message['message']['text']])) {
             $this->menuHandler->process($message);
         } else {
             $this->textHandler->process($message);

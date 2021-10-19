@@ -65,6 +65,11 @@ class User
     private ?bool $isAuth = null;
 
     /**
+     * @ORM\Column(type="string", nullable = true)
+     */
+    private ?string $photo = null;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private DateTime $createdAt;
@@ -182,6 +187,11 @@ class User
         return $this->surname;
     }
 
+    public function getChatId(): int
+    {
+        return $this->chatId;
+    }
+
     public function setIsAuth(bool $isAuth)
     {
         $this->isAuth = $isAuth;
@@ -202,6 +212,18 @@ class User
     public function getUserFilter(): UserFilter
     {
         return $this->userFilter;
+    }
+
+    public function getPhoto(): string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(string $photo): self
+    {
+        $this->photo = $photo;
+
+        return $this;
     }
 
     public function resetStage()

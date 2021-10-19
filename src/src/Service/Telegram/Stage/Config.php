@@ -6,6 +6,7 @@ use App\Service\Telegram\Stage\Registration\AgeStage;
 use App\Service\Telegram\Stage\Registration\CityStage;
 use App\Service\Telegram\Stage\Registration\FirstLastNameStage;
 use App\Service\Telegram\Stage\Registration\GenderStage;
+use App\Service\Telegram\Stage\Registration\PhotoStage;
 
 class Config
 {
@@ -33,6 +34,10 @@ class Config
             '4' => [
                 'info'  => 'user wrote gender',
                 'class' => GenderStage::class
+            ],
+            '5' => [
+                'info'  => 'user send photo',
+                'class' => PhotoStage::class
             ]
         ],
         self::FILTER_STAGE => [

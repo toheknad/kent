@@ -35,7 +35,7 @@ class UserFilter
     /**
      * @ORM\OneToOne(targetEntity="User", mappedBy="userFilter")
      */
-    private $user;
+    private User $user;
 
     public function getId(): ?int
     {
@@ -83,5 +83,10 @@ class UserFilter
         $this->user = $user;
 
         return $this;
+    }
+
+    public function getUsersFilterMatched()
+    {
+
     }
 }
