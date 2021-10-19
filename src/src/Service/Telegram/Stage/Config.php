@@ -1,6 +1,7 @@
 <?php
 namespace App\Service\Telegram\Stage;
 
+use App\Service\Telegram\Stage\Menu\SearchHandler;
 use App\Service\Telegram\Stage\Registration\AgeStage;
 use App\Service\Telegram\Stage\Registration\CityStage;
 use App\Service\Telegram\Stage\Registration\FirstLastNameStage;
@@ -52,7 +53,7 @@ class Config
 
     public const MENU = [
         "🔒 Мой профиль" => true,
-        "📓 Поиск" => true,
+        "📓 Поиск" => SearchHandler::class,
         "👁 Взаимные матчи" => true
     ];
 }

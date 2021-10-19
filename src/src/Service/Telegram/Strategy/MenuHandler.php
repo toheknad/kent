@@ -2,6 +2,7 @@
 namespace App\Service\Telegram\Strategy;
 
 use App\Repository\UserRepository;
+use App\Service\Telegram\Stage\Config;
 use App\Service\Telegram\Stage\StageManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Longman\TelegramBot\Request;
@@ -19,9 +20,9 @@ class MenuHandler implements MessageHandlerStrategyInterface
         $this->stageManager = $stageManager;
     }
 
-    public function process(array $message)
+    public function process(array $messa1ge)
     {
-        $user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])[0];
-        $this->stageManager->handle($user, $message);
+        $handlerName = Config::MENU[$message['message']['text']];
+        (new $handlerName($this->userRepository, $this->entityManager))->handle();
     }
 }
