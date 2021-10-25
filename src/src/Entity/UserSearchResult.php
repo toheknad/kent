@@ -39,8 +39,16 @@ class UserSearchResult
      */
     private ?DateTime $updatedAt;
 
-    public function __construct()
+    /**
+     * @ORM\Column(type="string")
+     */
+    private string $type;
+
+    public function __construct(User $userFrom, User $userTo, string $type)
     {
+        $this->userFrom = $userFrom;
+        $this->userTo = $userTo;
+        $this->type = $type;
     }
 
     /**

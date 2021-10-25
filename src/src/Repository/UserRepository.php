@@ -3,7 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Entity\UserSearchResult;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -70,8 +72,39 @@ class UserRepository extends ServiceEntityRepository
                 ->setParameter('city', $userFilter->getGender());
         }
 
+
+
         return $query->getQuery()
             ->getSingleResult();
+    }
+
+
+    public function getUserByFilterTest(User $user)
+    {
+        $userFilter = $user->getUserFilter();
+
+        $subQuery = $this->createQueryBuilder('u')
+                    ->andWhere('userFrom = :currentUser')
+                    ->setParameter('currentUser', $user->getId());
+
+        $query = $this->createQueryBuilder('u')
+            ->andWhere('u.age > :ageFrom')
+            ->andWhere('u.age < :ageTo')
+            ->andWhere('u.city = :city')
+            ->andWhere('u.id != :currentUserId')
+            ->andWhere()
+            ->setParameter('ageFrom', $userFilter->getAgeFrom())
+            ->setParameter('ageTo', $userFilter->getAgeTo())
+            ->setParameter('city', $user->getCity())
+            ->setParameter('currentUserId', $user->getId());
+
+        if ($userFilter->getGender() !== 'неважно') {
+            $query->andWhere('u.gender = :gender')
+                ->setParameter('city', $userFilter->getGender());
+        }
+
+        return $query->getQuery()
+            ->getArrayResult();
     }
 
 }

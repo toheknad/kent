@@ -85,10 +85,19 @@ class User
     private ?DateTime $updatedAt;
 
     /**
+     * @ORM\OneToMany(targetEntity="UserSearchResult", mappedBy="User")
+     */
+    private $userFrom;
+
+    /**
+     * @ORM\OneToMany(targetEntity="UserSearchResult", mappedBy="User")
+     */
+    private $userTo;
+
+    /**
      * @ORM\OneToOne(targetEntity="UserFilter", inversedBy="user", cascade={"persist"})
      */
     private $userFilter;
-
 
     public function __construct(int $chatId)
     {
