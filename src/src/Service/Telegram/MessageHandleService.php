@@ -5,6 +5,7 @@ namespace App\Service\Telegram;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\Telegram\Stage\Config;
+use App\Service\Telegram\Strategy\CallbackQueryHandler;
 use App\Service\Telegram\Strategy\CommandHandler;
 use App\Service\Telegram\Strategy\MenuHandler;
 use App\Service\Telegram\Strategy\TextHandler;
@@ -18,6 +19,7 @@ class MessageHandleService
     private UserRepository $userRepository;
     private EntityManagerInterface $entityManager;
     private MenuHandler $menuHandler;
+    private CallbackQueryHandler $callbackQueryHandler;
 
     /**
      * @param CommandHandler $commandHandler
@@ -27,7 +29,8 @@ class MessageHandleService
                                 CommandHandler $commandHandler,
                                 TextHandler $textHandler,
                                 UserRepository $userRepository,
-                                MenuHandler $menuHandler
+                                MenuHandler $menuHandler,
+                                CallbackQueryHandler $callbackQueryHandler
     )
     {
         $this->commandHandler = $commandHandler;
@@ -35,6 +38,7 @@ class MessageHandleService
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
         $this->menuHandler = $menuHandler;
+        $this->callbackQueryHandler = $callbackQueryHandler;
     }
 
     /**
@@ -45,7 +49,7 @@ class MessageHandleService
         echo "<pre>";
         print_r($message);
         echo "</pre>";
-        $this->identificationUser($message);
+        //$this->identificationUser($message);
         $this->handleMessageByType($message);
 
     }
@@ -59,6 +63,8 @@ class MessageHandleService
             $this->commandHandler->process($message);
         } elseif (isset($message['message']['text']) && isset(Config::MENU[$message['message']['text']])) {
             $this->menuHandler->process($message);
+        } elseif (isset($message['callback_query'])) {
+            $this->callbackQueryHandler->process($message);
         } else {
             $this->textHandler->process($message);
         }

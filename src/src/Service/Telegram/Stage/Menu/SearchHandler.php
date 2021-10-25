@@ -58,14 +58,18 @@ class SearchHandler
             'photo'  => $userAfterFilter->getPhoto()
         ]);
 
-        $denormalizedLink = [];
-        $denormalizedLink['text'] = '❤️';
-        $denormalizedLink['callback_data'] = json_encode(['type' => 'search', 'action' => 'like']);
+        $likeButton = [];
+        $likeButton['text'] = '👎';
+        $likeButton['callback_data'] = json_encode(['type' => 'search', 'action' => 'dislike', 'userId' => $userAfterFilter->getId()]);
+
+        $dislikeButton = [];
+        $dislikeButton['text'] = '👍️';
+        $dislikeButton['callback_data'] = json_encode(['type' => 'search', 'action' => 'like', 'userId' => $userAfterFilter->getId()]);
 
         $keyboards = new InlineKeyboard(
             [
-                $denormalizedLink,
-                $denormalizedLink
+                $likeButton,
+                $dislikeButton
             ],
         );
 

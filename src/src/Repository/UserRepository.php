@@ -70,8 +70,6 @@ class UserRepository extends ServiceEntityRepository
                 ->setParameter('city', $userFilter->getGender());
         }
 
-
-
         return $query->getQuery()
             ->getSingleResult();
     }
