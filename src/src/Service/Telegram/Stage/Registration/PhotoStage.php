@@ -38,8 +38,7 @@ class PhotoStage implements StageInterface
     private function checkPhoto(array $photo, int $chatId)
     {
         if (!isset($photo[2]['file_id'])) {
-            print_r('3213');
-                $this->sendErrorTypeMessage($chatId);
+            $this->sendErrorTypeMessage($chatId);
         }
         $this->sendSuccess($chatId);
         return $photo[2]['file_id'];

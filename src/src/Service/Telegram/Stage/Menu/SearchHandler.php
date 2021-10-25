@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use App\Service\Telegram\Stage\StageInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Client;
+use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 
@@ -45,21 +46,34 @@ class SearchHandler
     private function sendResultToUser(User $userAfterFilter, int $chatId)
     {
         $text = [];
-        $text[] = "{$userAfterFilter->getName()} {$userAfterFilter->getSurname()}";
-        $text[] = "Возраст: {$userAfterFilter->getAge()}";
-        $text[] = "Пол: {$userAfterFilter->getGender()}";
-        $text[] = "Город: {$userAfterFilter->getCity()}";
+        $text[] = "<b>{$userAfterFilter->getName()} {$userAfterFilter->getSurname()}</b>";
+        $text[] = "<b><i>Возраст</i></b>: {$userAfterFilter->getAge()}";
+        $text[] = "<b><i>Пол</i></b>: {$userAfterFilter->getGender()}";
+        $text[] = "<b><i>Город</i></b>: {$userAfterFilter->getCity()}";
+        $text[] = "<b><i>Описание</i></b>: {$userAfterFilter->getAbout()}";
         $text = implode(PHP_EOL, $text);
 
         Request::sendPhoto([
             'chat_id' => $chatId,
-            'photo'  => 'AgACAgIAAxkBAAIBU2Fu_D-NR4mHWX1uVWN1fO0qBludAAL6szEbBfB4SzFUyBKa7XOEAQADAgADbQADIQQ'
+            'photo'  => $userAfterFilter->getPhoto()
         ]);
+
+        $denormalizedLink = [];
+        $denormalizedLink['text'] = '❤️';
+        $denormalizedLink['callback_data'] = json_encode(['type' => 'search', 'action' => 'like']);
+
+        $keyboards = new InlineKeyboard(
+            [
+                $denormalizedLink,
+                $denormalizedLink
+            ],
+        );
 
         Request::sendMessage([
             'chat_id' => $chatId,
             'text'    => $text,
-            'parse_mode' => 'Markdown'
+            'parse_mode' => 'HTML',
+            'reply_markup' =>  $keyboards,
         ]);
 
     }

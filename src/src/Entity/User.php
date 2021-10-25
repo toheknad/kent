@@ -70,6 +70,11 @@ class User
     private ?string $photo = null;
 
     /**
+     * @ORM\Column(type="string", nullable = true)
+     */
+    private ?string $about = null;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private DateTime $createdAt;
@@ -125,6 +130,13 @@ class User
     public function setStep(int $id)
     {
         $this->step = $id;
+    }
+
+    public function setAbout(string $about): self
+    {
+        $this->about = $about;
+
+        return $this;
     }
 
     public function setAge(int $age)
@@ -217,6 +229,11 @@ class User
     public function getPhoto(): string
     {
         return $this->photo;
+    }
+
+    public function getAbout(): string
+    {
+        return $this->about;
     }
 
     public function setPhoto(string $photo): self

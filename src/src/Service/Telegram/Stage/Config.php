@@ -2,6 +2,7 @@
 namespace App\Service\Telegram\Stage;
 
 use App\Service\Telegram\Stage\Menu\SearchHandler;
+use App\Service\Telegram\Stage\Registration\AboutStage;
 use App\Service\Telegram\Stage\Registration\AgeStage;
 use App\Service\Telegram\Stage\Registration\CityStage;
 use App\Service\Telegram\Stage\Registration\FirstLastNameStage;
@@ -38,6 +39,10 @@ class Config
             '5' => [
                 'info'  => 'user send photo',
                 'class' => PhotoStage::class
+            ],
+            '6' => [
+                'info'  => 'user wrote about',
+                'class' => AboutStage::class
             ]
         ],
         self::FILTER_STAGE => [
