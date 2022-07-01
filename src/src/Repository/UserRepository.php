@@ -72,8 +72,8 @@ class UserRepository extends ServiceEntityRepository
         print_r('fdsfsd');
 
         $query = $this->createQueryBuilder('u')
-            ->andWhere('u.age > :ageFrom')
-            ->andWhere('u.age < :ageTo')
+            ->andWhere('u.age >= :ageFrom')
+            ->andWhere('u.age <= :ageTo')
             ->andWhere('u.city = :city')
             ->andWhere('u.id != :currentUserId')
             ->setParameter('ageFrom', $userFilter->getAgeFrom())
@@ -85,11 +85,11 @@ class UserRepository extends ServiceEntityRepository
                 ->setParameter('showedUsersId', $showedUsers);
         }
 
-//        if ($userFilter->getGender() !== 'неважно') {
-//            $query->andWhere('u.gender = :gender')
-//                ->setParameter('gender', (string)$userFilter->getGender());
-//        }
-//
+        if ($userFilter->getGender() !== 'неважно') {
+            $query->andWhere('u.gender = :gender')
+                ->setParameter('gender', $userFilter->getGender());
+        }
+
 
 
         return $query->getQuery()

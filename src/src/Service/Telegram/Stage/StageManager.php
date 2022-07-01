@@ -30,15 +30,33 @@ class StageManager
         $currentUserStage = $this->hasUserStage($user);
         $currentUserStep = $user->getStep();
         $nextStep = $currentUserStep + 1;
-        $handlerName = $this->defineHandler($currentUserStage, $nextStep);
 
+
+        // регистрация и фильтр
         switch ($currentUserStage){
             case Config::REGISTRATION_STAGE:
+                $handlerName = $this->defineHandler($currentUserStage, $nextStep);
                 (new $handlerName($this->userRepository, $this->entityManager))->handle($user, $message, $nextStep);
                 break;
             case Config::FILTER_STAGE:
+                $handlerName = $this->defineHandler($currentUserStage, $nextStep);
                 (new $handlerName($this->userRepository, $this->userFilterRepository, $this->entityManager))->handle($user, $message, $nextStep);
                 break;
+        }
+
+        // изменение профиля
+        if ($currentUserStage === Config::PROFILE_EDIT_STAGE) {
+            $handlerName = $this->defineHandler($currentUserStage, $currentUserStep);
+            (new $handlerName($this->userRepository, $this->entityManager))->handle($user, $message, $nextStep);
+        }
+
+        // изменение фильтров
+        if ($currentUserStage === Config::FILTER_EDIT_STAGE) {
+            print_r($currentUserStep);
+            print_r($currentUserStage);
+            print_r('fsdfdsfsf');
+            $handlerName = $this->defineHandler($currentUserStage, $currentUserStep);
+            (new $handlerName($this->userRepository, $this->userFilterRepository, $this->entityManager))->handle($user, $message, $nextStep);
         }
     }
 

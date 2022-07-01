@@ -1,0 +1,103 @@
+<?php
+namespace App\Service\Telegram\Stage\Edit;
+
+use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Service\Telegram\Stage\StageInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Longman\TelegramBot\Request;
+
+class PhotoStage implements StageInterface
+{
+    private EntityManagerInterface $entityManager;
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager)
+    {
+        $this->userRepository = $userRepository;
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function handle(User $user, array $message, int $nextStep)
+    {
+        $chatId = $message['message']['chat']['id'];
+        if (!isset($message['message']['photo'])) {
+            $this->sendErrorTypeMessage($chatId);
+        }
+        $photo = $message['message']['photo'];
+        $photo = $this->checkPhoto($photo, $chatId);
+        $this->saveUserData($photo, $chatId, $nextStep);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function checkPhoto(array $photo, int $chatId)
+    {
+        if (!isset($photo[2]['file_id'])) {
+            $this->sendErrorTypeMessage($chatId);
+        }
+        $this->sendSuccess($chatId);
+        return $photo[2]['file_id'];
+    }
+
+    private function sendSuccess(int $chatId)
+    {
+        $text = [];
+        $text[] = "Отлично! Я сохранил ваше фото";
+        $text[] = 'Теперь можете продолжить поиск';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+    }
+
+    private function saveUserData(string $photo, int $chatId, int $nextStep)
+    {
+        $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
+        $user->setStep(0);
+        $user->setStage('');
+        $user->setPhoto($photo);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    private function sendErrorTypeMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = 'Вы точно скинули фото?';
+        $text[] = 'Попробуйте, пожалуйста, еще раз';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+        throw new \Exception("User send not photo");
+    }
+
+
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = "Отлично, теперь пришлите мне фото, которое люди будут видеть";
+        $text[] = "при показе вашей анкеты";
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
+    }
+
+
+}

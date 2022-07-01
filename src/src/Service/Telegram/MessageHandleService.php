@@ -82,7 +82,7 @@ class MessageHandleService
             }
         } catch (\Exception $exception) {
             throw $exception;
-//            if (!$user = $this->userRepository->findOneBy(['chatId' => $message['message']['from']['id']])) {
+//            if (!$user = $this->userRepository->findOneBy(['chatId' => $messacge['message']['from']['id']])) {
 //                return;
 //            }
 //

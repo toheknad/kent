@@ -1,0 +1,103 @@
+<?php
+namespace App\Service\Telegram\Stage\Edit;
+
+use App\Entity\User;
+use App\Repository\UserRepository;
+use App\Service\Telegram\Stage\StageInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Longman\TelegramBot\Request;
+
+class CityStage implements StageInterface
+{
+    private EntityManagerInterface $entityManager;
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository, EntityManagerInterface $entityManager)
+    {
+        $this->userRepository = $userRepository;
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function handle(User $user, array $message, int $nextStep)
+    {
+        $city = $message['message']['text'];
+        $chatId = $message['message']['chat']['id'];
+        $city = $this->checkCity($city, $chatId);
+        $this->saveUserData($city, $chatId, $nextStep);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function checkCity(string $city, int $chatId)
+    {
+        //TODO сделать проверку на город
+        $this->sendSuccess($city, $chatId);
+        return $city;
+    }
+
+//    /**
+//     * @param int $chatId
+//     * @throws \Longman\TelegramBot\Exception\TelegramException
+//     */
+//    private function sendCountError(int $chatId)
+//    {
+//        $text = [];
+//        $text[] = 'Вы точно указали правильно Имя и Фамилию?';
+//        $text[] = 'Попробуйте, пожалуйста, еще раз';
+//        $text[] = 'Введите Имя и Фамилию';
+//        $text[] = 'Например, Иван Петров';
+//        $text = implode(PHP_EOL, $text);
+//
+//        Request::sendMessage([
+//            'chat_id' => $chatId,
+//            'text'    => $text,
+//            'parse_mode' => 'Markdown'
+//        ]);
+//        throw new \Exception("User send wrong first and last name. it's count error");
+//    }
+
+    private function sendSuccess(string $city, int $chatId)
+    {
+        $text = [];
+        $text[] = "Ваш город - {$city}, я запомнил!";
+        $text[] = 'Теперь можете продолжить поиск';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+    }
+
+    private function saveUserData(string $city, int $chatId, int $nextStep)
+    {
+        $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
+        $user->setStep(0);
+        $user->setStage('');
+        $user->setCity($city);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+    }
+
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = 'Теперь введите город';
+        $text[] = 'Например, Санкт-Петербург';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
+    }
+
+
+}

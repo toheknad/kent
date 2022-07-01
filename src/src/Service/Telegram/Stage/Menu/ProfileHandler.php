@@ -36,12 +36,37 @@ class ProfileHandler
     private function sendResultToUser(User $userAfterFilter, int $chatId)
     {
         $text = [];
-        $text[] = "<b>{$userAfterFilter->getName()} {$userAfterFilter->getSurname()}</b>";
+        $text[] = "<b>Ваш профиль</b>";
+        $text[] = "<b><i>Имя</i></b>: {$userAfterFilter->getName()}";
         $text[] = "<b><i>Возраст</i></b>: {$userAfterFilter->getAge()}";
         $text[] = "<b><i>Пол</i></b>: {$userAfterFilter->getGender()}";
         $text[] = "<b><i>Город</i></b>: {$userAfterFilter->getCity()}";
-        $text[] = "<b><i>Описание</i></b>: {$userAfterFilter->getAbout()}";
+        $text[] = "<b><i>Возраст</i></b>: {$userAfterFilter->getAge()}";
+        $text[] = "";
+        $text[] = "<b>Фильтры</b>";
+        $text[] = "Вы ищите человека по параметрам ниже";
+        $text[] = "<b><i>Пол</i></b>: {$userAfterFilter->getUserFilter()->getGender()}";
+        $text[] = "<b><i>Возраст</i></b>: от {$userAfterFilter->getUserFilter()->getAgeFrom()} до {$userAfterFilter->getUserFilter()->getAgeTo()}";
+        $text[] = "";
         $text = implode(PHP_EOL, $text);
+
+
+        $editProfileButton = [];
+        $editProfileButton['text'] = 'Редактировать профиль';
+        $editProfileButton['callback_data'] = json_encode(['type' => 'profile', 'action' => 'menu', 'userId' => $userAfterFilter->getId()]);
+
+        $editFilterButton = [];
+        $editFilterButton['text'] = 'Редактировать фильтры';
+        $editFilterButton['callback_data'] = json_encode(['type' => 'filter', 'action' => 'menu', 'userId' => $userAfterFilter->getId()]);
+
+        $keyboards = new InlineKeyboard(
+            [
+                $editProfileButton,
+            ],
+            [
+                $editFilterButton,
+            ],
+        );
 
         Request::sendPhoto([
             'chat_id' => $chatId,
@@ -52,9 +77,7 @@ class ProfileHandler
             'chat_id' => $chatId,
             'text'    => $text,
             'parse_mode' => 'HTML',
+            'reply_markup' =>  $keyboards,
         ]);
-
     }
-
-
 }
