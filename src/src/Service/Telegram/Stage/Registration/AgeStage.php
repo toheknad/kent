@@ -107,5 +107,20 @@ class AgeStage implements StageInterface
         $this->entityManager->flush();
     }
 
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = 'Теперь мне нужно узнать ваш возраст';
+        $text[] = 'Введите, например, 20';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
+    }
+
 
 }

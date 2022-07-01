@@ -117,5 +117,20 @@ class AgeStage implements StageInterface
         $this->entityManager->flush();
     }
 
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = 'Введите возрастной диапазон для фильтра';
+        $text[] = 'Например, 17-25';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
+    }
+
 
 }

@@ -71,4 +71,9 @@ class StageManager
 
         return $this->config::CONFIG[$currentUserStage][$nextStep]['class'];
     }
+
+    public function defineHandlerByUser(User $user)
+    {
+        return $this->config::CONFIG[$user->getStage()][$user->getStep()]['class'];
+    }
 }

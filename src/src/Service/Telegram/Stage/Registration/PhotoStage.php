@@ -89,4 +89,20 @@ class PhotoStage implements StageInterface
     }
 
 
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = "Отлично, теперь пришлите мне фото, которое люди будут видеть";
+        $text[] = "при показе вашей анкеты";
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
+    }
+
+
 }

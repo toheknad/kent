@@ -57,6 +57,20 @@ class UserRepository extends ServiceEntityRepository
     {
         $userFilter = $user->getUserFilter();
 
+        $subQuery = $this->getEntityManager()->createQueryBuilder()
+            ->select('IDENTITY(usr.userTo) as id')
+            ->from(UserSearchResult::class, 'usr')
+            ->andWhere('usr.userFrom = :currentUser')
+            ->setParameter('currentUser', $user->getId());
+        $showedUsers = $subQuery->getQuery()->getArrayResult();
+        $test = implode(', ', array_map(function ($value) {
+            return $value['id'];
+        }, $showedUsers));
+        print_r('<pre>');
+        print_r($test);
+        print_r('</pre>');
+        print_r('fdsfsd');
+
         $query = $this->createQueryBuilder('u')
             ->andWhere('u.age > :ageFrom')
             ->andWhere('u.age < :ageTo')
@@ -66,45 +80,21 @@ class UserRepository extends ServiceEntityRepository
             ->setParameter('ageTo', $userFilter->getAgeTo())
             ->setParameter('city', $user->getCity())
             ->setParameter('currentUserId', $user->getId());
-
-        if ($userFilter->getGender() !== 'неважно') {
-            $query->andWhere('u.gender = :gender')
-                ->setParameter('city', $userFilter->getGender());
+        if ($showedUsers) {
+            $query->andWhere('u.id NOT IN (:showedUsersId)')
+                ->setParameter('showedUsersId', $showedUsers);
         }
 
+//        if ($userFilter->getGender() !== 'неважно') {
+//            $query->andWhere('u.gender = :gender')
+//                ->setParameter('gender', (string)$userFilter->getGender());
+//        }
+//
 
 
         return $query->getQuery()
-            ->getSingleResult();
+            ->getResult();
     }
 
-
-    public function getUserByFilterTest(User $user)
-    {
-        $userFilter = $user->getUserFilter();
-
-        $subQuery = $this->createQueryBuilder('u')
-                    ->andWhere('userFrom = :currentUser')
-                    ->setParameter('currentUser', $user->getId());
-
-        $query = $this->createQueryBuilder('u')
-            ->andWhere('u.age > :ageFrom')
-            ->andWhere('u.age < :ageTo')
-            ->andWhere('u.city = :city')
-            ->andWhere('u.id != :currentUserId')
-            ->andWhere()
-            ->setParameter('ageFrom', $userFilter->getAgeFrom())
-            ->setParameter('ageTo', $userFilter->getAgeTo())
-            ->setParameter('city', $user->getCity())
-            ->setParameter('currentUserId', $user->getId());
-
-        if ($userFilter->getGender() !== 'неважно') {
-            $query->andWhere('u.gender = :gender')
-                ->setParameter('city', $userFilter->getGender());
-        }
-
-        return $query->getQuery()
-            ->getArrayResult();
-    }
 
 }

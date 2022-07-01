@@ -12,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UserSearchResult
 {
+
+    public const TYPE_LIKE = 'like';
+    public const TYPE_DISLIKE = 'dislike';
     /**
      * @ORM\Id
      * @ORM\GeneratedValue

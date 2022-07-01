@@ -67,5 +67,25 @@ class AboutStage implements StageInterface
         $this->entityManager->flush();
     }
 
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = 'Теперь напишите чтобы нибудь о себе';
+        $text[] = 'Это описание люди будут видеть при виде вашей анкеты';
+        $text[] = '---- Пример ----';
+        $text[] = 'Всем привет! Меня зовут Иван Иванов, ищу себе соседа';
+        $text[] = 'недалеко от центра в питере, бюджет квартиры до 30к.';
+        $text[] = 'Домашних животных нет';
+        $text[] = 'Вредных привычек тоже не имею';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
+    }
+
 
 }

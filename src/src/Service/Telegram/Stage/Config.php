@@ -1,6 +1,7 @@
 <?php
 namespace App\Service\Telegram\Stage;
 
+use App\Service\Telegram\Stage\Menu\ProfileHandler;
 use App\Service\Telegram\Stage\Menu\SearchHandler;
 use App\Service\Telegram\Stage\Registration\AboutStage;
 use App\Service\Telegram\Stage\Registration\AgeStage;
@@ -13,6 +14,8 @@ class Config
 {
     public const REGISTRATION_STAGE = 'registration';
     public const FILTER_STAGE = 'filter';
+
+    public const WELCOME_STAGE_CODE = '100';
 
     public const CONFIG = [
         self::REGISTRATION_STAGE => [
@@ -56,13 +59,14 @@ class Config
             ],
             '2' => [
                 'info'  => 'user wrote age for filter',
+                'retryMessage' => 'Вам',
                 'class' => \App\Service\Telegram\Stage\Filter\AgeStage::class
             ],
         ]
     ];
 
     public const MENU = [
-        "🔒 Мой профиль" => true,
+        "🔒 Мой профиль" => ProfileHandler::class,
         "📓 Поиск" => SearchHandler::class,
         "👁 Взаимные матчи" => true
     ];

@@ -85,5 +85,20 @@ class CityStage implements StageInterface
         $this->entityManager->flush();
     }
 
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = 'Теперь введите город';
+        $text[] = 'Например, Санкт-Петербург';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
+    }
+
 
 }

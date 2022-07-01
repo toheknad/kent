@@ -3,7 +3,6 @@ namespace App\Service\Telegram\Stage\Menu;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use App\Service\Telegram\Message\MessageBuilder;
 use App\Service\Telegram\Stage\StageInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Client;
@@ -11,7 +10,7 @@ use Longman\TelegramBot\Entities\InlineKeyboard;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 
-class SearchHandler
+class ProfileHandler
 {
     private EntityManagerInterface $entityManager;
     private UserRepository $userRepository;
@@ -27,29 +26,11 @@ class SearchHandler
      */
     public function handle(User $user, array $message)
     {
-        if (!$user->getIsAuth()) {
-            MessageBuilder::sendAuthErrorMessage($message['message']['chat']['id']);
-            throw new \Exception('Auth error');
-        }
         $city = $message['message']['text'];
         $chatId = $message['message']['chat']['id'];
-        $userAfterFilter = $this->userRepository->getUserByFilter($user);
-        if ($userAfterFilter) {
-            MessageBuilder::sendResultBySearchToUser($userAfterFilter[0],$chatId);
-        } else {
-            MessageBuilder::sendNotFoundBySearch($user->getChatId());
-        }
+        $user = $this->userRepository->find($user);
+        $this->sendResultToUser($user, $chatId);
 
-    }
-
-
-    private function saveUserData(string $city, int $chatId, int $nextStep)
-    {
-        $user = $this->userRepository->findOneBy(['chatId' => $chatId]);
-        $user->setStep($nextStep);
-        $user->setCity($city);
-        $this->entityManager->persist($user);
-        $this->entityManager->flush();
     }
 
     private function sendResultToUser(User $userAfterFilter, int $chatId)
@@ -67,26 +48,10 @@ class SearchHandler
             'photo'  => $userAfterFilter->getPhoto()
         ]);
 
-        $likeButton = [];
-        $likeButton['text'] = '👎';
-        $likeButton['callback_data'] = json_encode(['type' => 'search', 'action' => 'dislike', 'userId' => $userAfterFilter->getId()]);
-
-        $dislikeButton = [];
-        $dislikeButton['text'] = '👍️';
-        $dislikeButton['callback_data'] = json_encode(['type' => 'search', 'action' => 'like', 'userId' => $userAfterFilter->getId()]);
-
-        $keyboards = new InlineKeyboard(
-            [
-                $likeButton,
-                $dislikeButton
-            ],
-        );
-
         Request::sendMessage([
             'chat_id' => $chatId,
             'text'    => $text,
             'parse_mode' => 'HTML',
-            'reply_markup' =>  $keyboards,
         ]);
 
     }

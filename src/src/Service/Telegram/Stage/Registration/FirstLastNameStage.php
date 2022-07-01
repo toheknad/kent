@@ -69,7 +69,7 @@ class FirstLastNameStage implements StageInterface
         $text = [];
         $text[] = "Отлично, {$name[0]}!";
         $text[] = 'Теперь введите город';
-        $text[] = 'Например, Санкт-Питербург';
+        $text[] = 'Например, Санкт-Петербург';
         $text = implode(PHP_EOL, $text);
 
         Request::sendMessage([
@@ -87,6 +87,21 @@ class FirstLastNameStage implements StageInterface
         $user->setSurname($userData[1]);
         $this->entityManager->persist($user);
         $this->entityManager->flush();
+    }
+
+    public static function sendRetryMessage(int $chatId)
+    {
+        $text = [];
+        $text[] = 'Введите Имя и Фамилию';
+        $text[] = 'Например, Иван Петров';
+        $text = implode(PHP_EOL, $text);
+
+        Request::sendMessage([
+            'chat_id' => $chatId,
+            'text'    => $text,
+            'parse_mode' => 'Markdown'
+        ]);
+
     }
 
 

@@ -24,6 +24,8 @@ class MenuHandler implements MessageHandlerStrategyInterface
     {
         $user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])[0];
         $handlerName = Config::MENU[$message['message']['text']];
+        print_r($handlerName);
+
         (new $handlerName($this->userRepository, $this->entityManager))->handle($user, $message);
     }
 }

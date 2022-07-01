@@ -25,11 +25,11 @@ class CommandHandler implements MessageHandlerStrategyInterface
             $userText = $message['message']['text'];
             $chatId = $message['message']['chat']['id'];
             $text = [];
-            if ($userText == '/start') {
+            if ($userText === '/start') {
                 $text[] = 'Привет!';
                 $text[] = 'Я бот, который поможет найти тебе лучшего соседа.';
                 $text[] = 'Чтобы начать мне нужно узнать о тебе кое-что';
-                $text[] = 'Для начала введи свою фамилию и имя';
+                $text[] = 'Для начала введи свою имя и фамилию';
             }
             $text = implode(PHP_EOL, $text);
 
@@ -46,7 +46,10 @@ class CommandHandler implements MessageHandlerStrategyInterface
 //            ]);
 
             /** @var User $user */
-            $user = $this->userRepository->findBy(['chatId' => $message['message']['from']['id']])[0];
+            $user = $this->userRepository->findOneBy(['chatId' => $message['message']['from']['id']]);
+            if (!$user) {
+                $user = new User($message['message']['from']['id']);
+            }
             $user->setStage(Config::REGISTRATION_STAGE);
             $user->setStep(0);
             $this->entityManager->persist($user);

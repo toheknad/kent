@@ -4,6 +4,7 @@ namespace App\Service\Telegram\Strategy;
 use App\Entity\User;
 use App\Entity\UserSearchResult;
 use App\Repository\UserRepository;
+use App\Service\Telegram\Message\MessageBuilder;
 use App\Service\Telegram\Stage\Config;
 use App\Service\Telegram\Stage\StageManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,18 +42,27 @@ class CallbackQueryHandler implements MessageHandlerStrategyInterface
                 $this->like($user, $userTo);
                 break;
         }
+
+        $result = $this->userRepository->getUserByFilter($user);
+
+        if ($result) {
+            MessageBuilder::sendResultBySearchToUser($result[0], $user->getChatId());
+        } else {
+            MessageBuilder::sendNotFoundBySearch($user->getChatId());
+        }
     }
 
     private function dislike(User $userFrom, User $userSearch)
     {
-        $userSearchResult = new UserSearchResult($userFrom, $userSearch, 'dislike');
-//        $this->entityManager->persist($userSearchResult);
-//        $this->entityManager->flush();
-        print_r($this->userRepository->getUserByFilterTest($userFrom));
+        $userSearchResult = new UserSearchResult($userFrom, $userSearch, UserSearchResult::TYPE_DISLIKE);
+        $this->entityManager->persist($userSearchResult);
+        $this->entityManager->flush();
     }
 
-    private function like(User $userFrom, int $userSearch)
+    private function like(User $userFrom, User $userSearch)
     {
-        $userSearchResult = new UserSearchResult($userFrom->getId(), $userSearch);
+        $userSearchResult = new UserSearchResult($userFrom, $userSearch, UserSearchResult::TYPE_LIKE);
+        $this->entityManager->persist($userSearchResult);
+        $this->entityManager->flush();
     }
 }
